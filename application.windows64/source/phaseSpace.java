@@ -1,7 +1,9 @@
 import processing.core.*; 
-
+import processing.data.*; 
 import processing.opengl.*; 
+
 import ddf.minim.*; 
+import ddf.minim.analysis.*; 
 
 import java.applet.*; 
 import java.awt.Dimension; 
@@ -17,9 +19,9 @@ import java.util.*;
 import java.util.zip.*; 
 import java.util.regex.*; 
 
-public class phaseSpace extends PApplet {
+public class PhaseSpace extends PApplet {
 
- /**
+/**
   * This sketch demonstrates how to use the <code>addListener</code> method of a <code>Recordable</code> class. 
   * The class used here is <code>AudioPlayer</code>, but you can also add listeners to <code>AudioInput</code>, 
   * <code>AudioOutput</code>, and <code>AudioSample</code> objects. The class defined in waveform.pde implements 
@@ -44,10 +46,10 @@ textFont(font);
 
 
   minim = new Minim(this);
-    in = minim.getLineIn(Minim.STEREO, 512);
-
+    in = minim.getLineIn(Minim.STEREO, 1024,44100);
+PitchDetectorHPS pitch=new PitchDetectorHPS(1024,44100,8);
  // groove = minim.loadFile("groove.mp3", 512);
-  waveform = new WaveformRenderer();
+  waveform = new WaveformRenderer(pitch,44100,1);
     in.addListener(waveform);
 
   //groove.addListener(waveform);
@@ -100,40 +102,72 @@ public void mouseDragged()
 }
 
 
-// This class is a very simple implementation of AudioListener. By implementing this interface, 
-// you can add instances of this class to any class in Minim that implements Recordable and receive
-// buffers of samples in a callback fashion. In other words, every time that a Recordable object has 
-// a new buffer of samples, it will send a copy to all of its AudioListeners. You can add an instance of 
-// an AudioListener to a Recordable by using the addListener method of the Recordable. If you want to 
-// remove a listener that you previously added, you call the removeListener method of Recordable, passing 
-// the listener you want to remove.
-//
-// Although possible, it is not advised that you add the same listener to more than one Recordable. 
-// Your listener will be called any time any of the Recordables you've added it have new samples. This 
-// means that the stream of samples the listener sees will likely be interleaved buffers of samples from 
-// all of the Recordables it is listening to, which is probably not what you want.
-//
-// You'll notice that the three methods of this class are synchronized. This is because the samples methods 
-// will be called from a different thread than the one instances of this class will be created in. That thread 
-// might try to send samples to an instance of this class while the instance is in the middle of drawing the 
-// waveform, which would result in a waveform made up of samples from two different buffers. Synchronizing 
-// all the methods means that while the main thread of execution is inside draw, the thread that calls 
-// samples will block until draw is complete. Likewise, a call to draw will block if the sample thread is inside 
-// one of the samples methods. Hope that's not too confusing!
+class PitchDetectorHPS{
+  
+  FFT fft;
+  int sampleRate;
+  int fftLength;
+  int harmonicSize;
+  float[][] step;
+  PitchDetectorHPS(int fftLength,int sampleRate,int harmonicSize){
+    fft=new FFT(fftLength,sampleRate);
+    this.sampleRate=sampleRate;
+    this.fftLength=fftLength;
+    this.harmonicSize=harmonicSize;
+    step=new float[harmonicSize][];
+    for(int i=0;i<harmonicSize;i++){
+      step[i]=new float[fftLength];
+    }
+   // fft.window(fft.HAMMING);
+  }
+  public float detect(float[] frame){
+    fft.forward(frame);
+    //downsample
+      for(int i=0;i<fftLength;i++){
+        for(int j=1;j<=harmonicSize;j++){
+           if(i%j==0)( step[j-1])[i/j]=fft.getBand(i);
+        }
+      }
+    //HSP
+      int index=0;
+      float max;
+      max=0;
+      float tmp;;
+      for(int i=0;i<fftLength;i++){
+        tmp=1;
+        for(int j=0;j<harmonicSize;j++){
+          tmp*=step[j][i];
+        }
+        //println(tmp);
+        if(tmp>max){
+          max=tmp;
+          index=i;
+        }
+      }
+      
+      return index*fft.getBandWidth();
+   
+  }
+}
+
+class WaveformRenderer implements AudioListener
+{
   float prev=0;
    float prev2=0;
   float prev3=0;
- 
-class WaveformRenderer implements AudioListener
-{
-
+ float freq=0;
   private float[] left;
   private float[] right;
-  
-  WaveformRenderer()
+  float partialCount;
+  int sampleRate;
+  PitchDetectorHPS pitch;
+  WaveformRenderer(PitchDetectorHPS pitch,int sampleRate,float partialFactor)
   {
     left = null; 
     right = null;
+    this.pitch=pitch;
+    this.sampleRate=sampleRate;
+    partialCount=(1+partialCount)*partialCount/2;
   }
   
   public synchronized void samples(float[] samp)
@@ -143,6 +177,8 @@ class WaveformRenderer implements AudioListener
   
   public synchronized void samples(float[] sampL, float[] sampR)
   {
+    freq=pitch.detect(sampL);
+    println(freq);
     left = sampL;
     right = sampR;
   }
@@ -170,7 +206,8 @@ class WaveformRenderer implements AudioListener
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
         stroke(30,100);
-        point( left[i]*200/m,4000/m*(tmp));
+        //normalize tmp with frequency
+        point( left[i]*100/m,100/5/(m)*(tmp)/freq/PI*sampleRate);
         //point( left[i]*200/m,2000/m*(tmp));
                 stroke(30,15);
 
@@ -185,9 +222,16 @@ class WaveformRenderer implements AudioListener
     }
 
   }
+  
+
 }
 
-  static public void main(String args[]) {
-    PApplet.main(new String[] { "--bgcolor=#F0F0F0", "phaseSpace" });
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "PhaseSpace" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
   }
 }

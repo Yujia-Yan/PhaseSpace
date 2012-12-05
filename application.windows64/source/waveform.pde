@@ -1,37 +1,22 @@
-// This class is a very simple implementation of AudioListener. By implementing this interface, 
-// you can add instances of this class to any class in Minim that implements Recordable and receive
-// buffers of samples in a callback fashion. In other words, every time that a Recordable object has 
-// a new buffer of samples, it will send a copy to all of its AudioListeners. You can add an instance of 
-// an AudioListener to a Recordable by using the addListener method of the Recordable. If you want to 
-// remove a listener that you previously added, you call the removeListener method of Recordable, passing 
-// the listener you want to remove.
-//
-// Although possible, it is not advised that you add the same listener to more than one Recordable. 
-// Your listener will be called any time any of the Recordables you've added it have new samples. This 
-// means that the stream of samples the listener sees will likely be interleaved buffers of samples from 
-// all of the Recordables it is listening to, which is probably not what you want.
-//
-// You'll notice that the three methods of this class are synchronized. This is because the samples methods 
-// will be called from a different thread than the one instances of this class will be created in. That thread 
-// might try to send samples to an instance of this class while the instance is in the middle of drawing the 
-// waveform, which would result in a waveform made up of samples from two different buffers. Synchronizing 
-// all the methods means that while the main thread of execution is inside draw, the thread that calls 
-// samples will block until draw is complete. Likewise, a call to draw will block if the sample thread is inside 
-// one of the samples methods. Hope that's not too confusing!
+
+class WaveformRenderer implements AudioListener
+{
   float prev=0;
    float prev2=0;
   float prev3=0;
- 
-class WaveformRenderer implements AudioListener
-{
-
+ float freq=0;
   private float[] left;
   private float[] right;
-  
-  WaveformRenderer()
+  float partialCount;
+  int sampleRate;
+  PitchDetectorHPS pitch;
+  WaveformRenderer(PitchDetectorHPS pitch,int sampleRate,float partialFactor)
   {
     left = null; 
     right = null;
+    this.pitch=pitch;
+    this.sampleRate=sampleRate;
+    partialCount=(1+partialCount)*partialCount/2;
   }
   
   synchronized void samples(float[] samp)
@@ -41,6 +26,8 @@ class WaveformRenderer implements AudioListener
   
   synchronized void samples(float[] sampL, float[] sampR)
   {
+    freq=pitch.detect(sampL);
+    println(freq);
     left = sampL;
     right = sampR;
   }
@@ -68,7 +55,8 @@ class WaveformRenderer implements AudioListener
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
         stroke(30,100);
-        point( left[i]*200/m,4000/m*(tmp));
+        //normalize tmp with frequency
+        point( left[i]*100/m,100/5/(m)*(tmp)/freq/PI*sampleRate);
         //point( left[i]*200/m,2000/m*(tmp));
                 stroke(30,15);
 
@@ -83,5 +71,7 @@ class WaveformRenderer implements AudioListener
     }
 
   }
+  
+
 }
 

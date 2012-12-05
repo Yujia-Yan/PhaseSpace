@@ -6,7 +6,7 @@
   */
 
 import ddf.minim.*;
-
+import ddf.minim.analysis.*;
 Minim minim;
 AudioPlayer groove;
 AudioInput in;
@@ -23,10 +23,10 @@ textFont(font);
 
 
   minim = new Minim(this);
-    in = minim.getLineIn(Minim.STEREO, 512);
-
+    in = minim.getLineIn(Minim.STEREO, 1024,44100);
+PitchDetectorHPS pitch=new PitchDetectorHPS(1024,44100,8);
  // groove = minim.loadFile("groove.mp3", 512);
-  waveform = new WaveformRenderer();
+  waveform = new WaveformRenderer(pitch,44100,1);
     in.addListener(waveform);
 
   //groove.addListener(waveform);
