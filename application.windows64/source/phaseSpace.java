@@ -55,11 +55,12 @@ PitchDetectorHPS pitch=new PitchDetectorHPS(1024,44100,5);
   //groove.addListener(waveform);
 }
 float scal=0.5f;
- public void mousePressed(){
+ public void keyPressed(){
    {
-    if( (mouseButton == LEFT))
+    if( (key == '+' || key=='='))
     scal+=1.2f;
-    else scal/=1.2f;
+    if( (key == '-' || key=='_'))
+    scal/=1.2f;
   }
  }
 public void draw()
