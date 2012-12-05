@@ -24,14 +24,14 @@ textFont(font);
 
   minim = new Minim(this);
     in = minim.getLineIn(Minim.STEREO, 1024,44100);
-PitchDetectorHPS pitch=new PitchDetectorHPS(1024,44100,8);
+PitchDetectorHPS pitch=new PitchDetectorHPS(1024,44100,5);
  // groove = minim.loadFile("groove.mp3", 512);
-  waveform = new WaveformRenderer(pitch,44100,1);
+  waveform = new WaveformRenderer(pitch,8000);
     in.addListener(waveform);
 
   //groove.addListener(waveform);
 }
-float scal=0.4;
+float scal=0.5;
  void mousePressed(){
    {
     if( (mouseButton == LEFT))

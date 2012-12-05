@@ -10,24 +10,25 @@ class WaveformRenderer implements AudioListener
   float partialCount;
   int sampleRate;
   PitchDetectorHPS pitch;
-  WaveformRenderer(PitchDetectorHPS pitch,int sampleRate,float partialFactor)
+  WaveformRenderer(PitchDetectorHPS pitch,int sampleRate)
   {
-    left = null; 
+    left = null;
     right = null;
     this.pitch=pitch;
     this.sampleRate=sampleRate;
-    partialCount=(1+partialCount)*partialCount/2;
   }
   
-  synchronized void samples(float[] samp)
-  {
-    left = samp;
+  synchronized void samples(float[] samp){
+    left=samp;
   }
-  
+
   synchronized void samples(float[] sampL, float[] sampR)
   {
-    freq=pitch.detect(sampL);
-    println(freq);
+    
+   
+    freq=freq*0.8+0.2*pitch.detect(sampL);
+   
+    //println(freq);
     left = sampL;
     right = sampR;
   }
@@ -43,7 +44,7 @@ class WaveformRenderer implements AudioListener
      {
        if(abs(left[i])>m)m=abs(left[i]);
      }
-     if(m<0.1)return;
+     if(m<0.01)return;
      // noFill();
       stroke(0);
       float tmp=0;
@@ -51,17 +52,21 @@ class WaveformRenderer implements AudioListener
       for ( int i = 0; i < left.length; i++ )
       {
         
-      strokeWeight(8);
+      strokeWeight(6);
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
-        stroke(30,100);
+       // stroke(30,60);
+        stroke(15,15);
         //normalize tmp with frequency
-        point( left[i]*100/m,100/5/(m)*(tmp)/freq/PI*sampleRate);
+        //
+        point( left[i]*600/m,100/(m) *(tmp)/PI*sampleRate/freq);
         //point( left[i]*200/m,2000/m*(tmp));
-                stroke(30,15);
-
-      strokeWeight(2);
-        //line(200*prev/m,4000*prev2/m,2000*prev3/m, left[i]*200/m,2000*(tmp)/m,200*(tmp2)/m);
+                //stroke(15,15);
+       // color(0,255,0);
+     // strokeWeight(2);
+        //line(600*prev/m,100*prev2/m/freq*sampleRate/PI,200*prev3/m/freq/PI*sampleRate/freq/PI*sampleRate, left[i]*600/m,100*(tmp)/m/freq/PI*sampleRate,200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
+        
+        //line(600*prev/m,100*prev2/m/freq*sampleRate/PI,0, left[i]*600/m,100*(tmp)/m/freq/PI*sampleRate,0);
         prev2=tmp;
         prev3=tmp2;
         prev=left[i];

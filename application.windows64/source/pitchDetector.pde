@@ -40,7 +40,7 @@ class PitchDetectorHPS{
           index=i;
         }
       }
-      
+       if(index==0)return 1.0;
       return index*fft.getBandWidth();
    
   }
