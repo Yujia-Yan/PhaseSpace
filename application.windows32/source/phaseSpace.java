@@ -58,7 +58,7 @@ float scal=0.5f;
  public void keyPressed(){
    {
     if( (key == '+' || key=='='))
-    scal+=1.2f;
+    scal*=1.2f;
     if( (key == '-' || key=='_'))
     scal/=1.2f;
   }
@@ -67,7 +67,7 @@ public void draw()
 {
 
    pushMatrix();
-   fill(255,80); // use black with alpha 10
+   fill(255,255); 
  // rectMode(CORNER);
   rect(0,0,width,height);
   fill(0);
@@ -113,7 +113,9 @@ class PitchDetectorHPS{
   PitchDetectorHPS(int fftLength,int sampleRate,int harmonicSize){
     fft=new FFT(fftLength,sampleRate);
     this.sampleRate=sampleRate;
-    this.fftLength=fftLength;
+    //this.fftLength=fftLength;
+    
+    this.fftLength=fft.specSize();
     this.harmonicSize=harmonicSize;
     step=new float[harmonicSize][];
     for(int i=0;i<harmonicSize;i++){
@@ -178,7 +180,7 @@ class WaveformRenderer implements AudioListener
   {
     
    
-    freq=freq*0.8f+0.2f*pitch.detect(sampL);
+    freq=freq*0.2f+0.8f*pitch.detect(sampL);
    
     //println(freq);
     left = sampL;
@@ -204,21 +206,23 @@ class WaveformRenderer implements AudioListener
       for ( int i = 0; i < left.length; i++ )
       {
         
-      strokeWeight(6);
+      strokeWeight(10);
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
        // stroke(30,60);
-        stroke(15,15);
+        stroke(30,30);
         //normalize tmp with frequency
         //
-        point( left[i]*600/m,100/(m) *(tmp)/PI*sampleRate/freq);
+        //point( left[i]*600/m,200/(m) *(tmp)/PI*sampleRate/freq);
+       // println(200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
+        point(left[i]*600/m,200*(tmp)/m/freq/PI*sampleRate);
         //point( left[i]*200/m,2000/m*(tmp));
                 //stroke(15,15);
        // color(0,255,0);
      // strokeWeight(2);
-        //line(600*prev/m,100*prev2/m/freq*sampleRate/PI,200*prev3/m/freq/PI*sampleRate/freq/PI*sampleRate, left[i]*600/m,100*(tmp)/m/freq/PI*sampleRate,200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
+      //  line(600*prev/m,200*prev2/m/freq*sampleRate/PI,200*prev3/m/freq/PI*sampleRate/freq/PI*sampleRate, left[i]*600/m,200*(tmp)/m/freq/PI*sampleRate,200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
         
-        //line(600*prev/m,100*prev2/m/freq*sampleRate/PI,0, left[i]*600/m,100*(tmp)/m/freq/PI*sampleRate,0);
+      //  line(600*prev/m,200*prev2/m/freq*sampleRate/PI,0, left[i]*600/m,200*(tmp)/m/freq/PI*sampleRate,0);
         prev2=tmp;
         prev3=tmp2;
         prev=left[i];

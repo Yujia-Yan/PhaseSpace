@@ -26,7 +26,7 @@ class WaveformRenderer implements AudioListener
   {
     
    
-    freq=freq*0.8+0.2*pitch.detect(sampL);
+    freq=freq*0.2+0.8*pitch.detect(sampL);
    
     //println(freq);
     left = sampL;
@@ -52,21 +52,23 @@ class WaveformRenderer implements AudioListener
       for ( int i = 0; i < left.length; i++ )
       {
         
-      strokeWeight(6);
+      strokeWeight(10);
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
        // stroke(30,60);
-        stroke(15,15);
+        stroke(30,30);
         //normalize tmp with frequency
         //
-        point( left[i]*600/m,100/(m) *(tmp)/PI*sampleRate/freq);
+        //point( left[i]*600/m,200/(m) *(tmp)/PI*sampleRate/freq);
+       // println(200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
+        point(left[i]*600/m,200*(tmp)/m/freq/PI*sampleRate);
         //point( left[i]*200/m,2000/m*(tmp));
                 //stroke(15,15);
        // color(0,255,0);
      // strokeWeight(2);
-        //line(600*prev/m,100*prev2/m/freq*sampleRate/PI,200*prev3/m/freq/PI*sampleRate/freq/PI*sampleRate, left[i]*600/m,100*(tmp)/m/freq/PI*sampleRate,200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
+      //  line(600*prev/m,200*prev2/m/freq*sampleRate/PI,200*prev3/m/freq/PI*sampleRate/freq/PI*sampleRate, left[i]*600/m,200*(tmp)/m/freq/PI*sampleRate,200*tmp2/m/freq/PI*sampleRate/freq/PI*sampleRate);
         
-        //line(600*prev/m,100*prev2/m/freq*sampleRate/PI,0, left[i]*600/m,100*(tmp)/m/freq/PI*sampleRate,0);
+      //  line(600*prev/m,200*prev2/m/freq*sampleRate/PI,0, left[i]*600/m,200*(tmp)/m/freq/PI*sampleRate,0);
         prev2=tmp;
         prev3=tmp2;
         prev=left[i];

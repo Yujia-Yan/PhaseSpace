@@ -35,7 +35,7 @@ float scal=0.5;
  void keyPressed(){
    {
     if( (key == '+' || key=='='))
-    scal+=1.2f;
+    scal*=1.2f;
     if( (key == '-' || key=='_'))
     scal/=1.2f;
   }
@@ -44,7 +44,7 @@ void draw()
 {
 
    pushMatrix();
-   fill(255,80); // use black with alpha 10
+   fill(255,255); 
  // rectMode(CORNER);
   rect(0,0,width,height);
   fill(0);

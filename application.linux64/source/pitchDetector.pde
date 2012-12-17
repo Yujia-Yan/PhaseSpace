@@ -8,7 +8,9 @@ class PitchDetectorHPS{
   PitchDetectorHPS(int fftLength,int sampleRate,int harmonicSize){
     fft=new FFT(fftLength,sampleRate);
     this.sampleRate=sampleRate;
-    this.fftLength=fftLength;
+    //this.fftLength=fftLength;
+    
+    this.fftLength=fft.specSize();
     this.harmonicSize=harmonicSize;
     step=new float[harmonicSize][];
     for(int i=0;i<harmonicSize;i++){
