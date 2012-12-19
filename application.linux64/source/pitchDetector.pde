@@ -14,9 +14,9 @@ class PitchDetectorHPS{
     this.harmonicSize=harmonicSize;
     step=new float[harmonicSize][];
     for(int i=0;i<harmonicSize;i++){
-      step[i]=new float[fftLength];
+      step[i]=new float[this.fftLength];
     }
-   // fft.window(fft.HAMMING);
+   //fft.window(fft.HAMMING);
   }
   float detect(float[] frame){
     fft.forward(frame);

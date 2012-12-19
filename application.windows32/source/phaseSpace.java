@@ -89,14 +89,7 @@ endCamera();
   popMatrix();
 }
 
-public void stop()
-{
-  // always close Minim audio classes when you are done with them
-  groove.close();
-  // always stop Minim before exiting.
-  minim.stop();
-  super.stop();
-}
+
 public void mouseDragged()
 {
 
@@ -119,9 +112,9 @@ class PitchDetectorHPS{
     this.harmonicSize=harmonicSize;
     step=new float[harmonicSize][];
     for(int i=0;i<harmonicSize;i++){
-      step[i]=new float[fftLength];
+      step[i]=new float[this.fftLength];
     }
-   // fft.window(fft.HAMMING);
+   //fft.window(fft.HAMMING);
   }
   public float detect(float[] frame){
     fft.forward(frame);
@@ -180,8 +173,8 @@ class WaveformRenderer implements AudioListener
   {
     
    
-    freq=freq*0.2f+0.8f*pitch.detect(sampL);
-   
+   freq=freq*0.8f+0.2f*pitch.detect(sampL);
+   //freq=100;
     //println(freq);
     left = sampL;
     right = sampR;
@@ -210,7 +203,7 @@ class WaveformRenderer implements AudioListener
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
        // stroke(30,60);
-        stroke(30,30);
+        stroke(0,30);
         //normalize tmp with frequency
         //
         //point( left[i]*600/m,200/(m) *(tmp)/PI*sampleRate/freq);

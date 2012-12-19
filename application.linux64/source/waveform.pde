@@ -26,8 +26,8 @@ class WaveformRenderer implements AudioListener
   {
     
    
-    freq=freq*0.2+0.8*pitch.detect(sampL);
-   
+   freq=freq*0.8+0.2*pitch.detect(sampL);
+   //freq=100;
     //println(freq);
     left = sampL;
     right = sampR;
@@ -56,7 +56,7 @@ class WaveformRenderer implements AudioListener
         tmp=left[i]-prev;
         tmp2=tmp-prev2;
        // stroke(30,60);
-        stroke(30,30);
+        stroke(0,30);
         //normalize tmp with frequency
         //
         //point( left[i]*600/m,200/(m) *(tmp)/PI*sampleRate/freq);

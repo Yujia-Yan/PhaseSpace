@@ -66,14 +66,7 @@ endCamera();
   popMatrix();
 }
 
-void stop()
-{
-  // always close Minim audio classes when you are done with them
-  groove.close();
-  // always stop Minim before exiting.
-  minim.stop();
-  super.stop();
-}
+
 void mouseDragged()
 {
 
